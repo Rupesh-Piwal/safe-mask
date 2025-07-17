@@ -48,7 +48,7 @@ export default function Home() {
     setOcrText(text);
     setOcrWords(words); // ← stores words for later use in handleMask
     const pii = detectPII(text);
-    console.log(pii)
+    console.log("🔍 Detected PII tags:", pii);
     setPiiTags(pii);
     // setStep("mask");
   };
@@ -95,7 +95,7 @@ export default function Home() {
   //   setRedactedImage(null);
   //   // setActiveTab("original");
   // }, []);
-   const resetTool = useCallback(() => {
+  const resetTool = useCallback(() => {
     setStep("upload");
     setImage(null);
     setRedactedImage(null);

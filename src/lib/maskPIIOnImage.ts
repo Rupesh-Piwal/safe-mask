@@ -18,8 +18,8 @@ export async function maskPIIOnImage(
       ctx.drawImage(image, 0, 0);
 
       ctx.fillStyle = "black";
-      boxes.forEach(({ top, left, width, height }) => {
-        ctx.fillRect(left, top, width, height);
+      boxes.forEach(({ x, y, width, height }) => {
+        ctx.fillRect(x, y, width, height);
       });
 
       const maskedBase64 = canvas.toDataURL("image/png");

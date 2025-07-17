@@ -1,19 +1,21 @@
 // types.ts
-export type PIITag = {
-  match: string;
-  start: number;
-  end: number;
-  entity: string;
+export interface PIITag {
+  type: string;
   text: string;
-  label: "AADHAAR" | "PHONE" | "EMAIL" | "DATE" | "PAN" | "UNKNOWN";
-};
+  value: string;
+  startIndex: number;
+  endIndex: number;
+  confidence: number;
+  label?: "AADHAAR" | "PHONE" | "EMAIL" | "DATE" | "PAN" | "UNKNOWN";
+}
 
-export type BoundingBox = {
+export interface BoundingBox {
   x: number;
   y: number;
   width: number;
   height: number;
-};
+}
 
-// RedactedBox can be the same as BoundingBox or extend it if needed
-export type RedactedBox = BoundingBox;
+export interface RedactedBox extends BoundingBox {
+  // Can add additional redaction-specific properties if needed
+}
