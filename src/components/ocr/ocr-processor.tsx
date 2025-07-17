@@ -2,6 +2,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { Progress } from "../ui/progress";
+import { Button } from "../ui/button";
+import { Shield } from "lucide-react";
 
 interface OCRPreviewProps {
   image: string;
@@ -10,7 +12,7 @@ interface OCRPreviewProps {
 }
 
 export const OCRPreview = ({ image, progress }: OCRPreviewProps) => {
-    const isComplete = progress === 100;
+  const isComplete = progress === 100;
   return (
     <Card className="bg-white/50 backdrop-blur-sm shadow-lg">
       <CardContent className="p-6 space-y-6">

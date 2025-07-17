@@ -24,6 +24,7 @@ export default function Home() {
     { text: string; start: number; end: number }[]
   >([]);
   const [ocrProgress, setOcrProgress] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState("original");
 
   const handleUpload = async (base64Image: string) => {
     setImage(base64Image);
@@ -61,12 +62,12 @@ export default function Home() {
     }
   }, [redactedImage]);
 
-  // const resetTool = useCallback(() => {
-  //   setState("upload");
-  //   setUploadedImage(null);
-  //   setRedactedImage(null);
-  //   setActiveTab("original");
-  // }, []);
+  const resetTool = useCallback(() => {
+    setStep("upload");
+    setImage(null);
+    setRedactedImage(null);
+    // setActiveTab("original");
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -91,11 +92,29 @@ export default function Home() {
 
           {/* ---------IMAGE-UPLOAD--------- */}
           {step === "ocr" && image && (
-            <OCRPreview
-              image={image}
-              onMaskPII={handleMaskPII}
-              progress={ocrProgress}
-            />
+            <>
+              <OCRPreview
+                image={image}
+                onMaskPII={handleMaskPII}
+                progress={ocrProgress}
+              />
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  onClick={handleMaskPII}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg shadow-md transition-all duration-200"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Mask PII
+                </Button>
+                <Button
+                  onClick={resetTool}
+                  variant="outline"
+                  className="px-8 py-3 rounded-lg border-gray-300 hover:bg-gray-50 bg-transparent"
+                >
+                  Upload Different Image
+                </Button>
+              </div>
+            </>
           )}
 
           {step === "mask" && (
@@ -137,7 +156,7 @@ export default function Home() {
                       Your sensitive information has been securely redacted
                     </p>
                   </div>
-                  {/* 
+
                   <Tabs
                     value={activeTab}
                     onValueChange={setActiveTab}
@@ -162,7 +181,7 @@ export default function Home() {
                       <div className="flex justify-center">
                         <div className="relative max-w-md w-full">
                           <Image
-                            src={uploadedImage || "/placeholder.svg"}
+                            src={image || "/placeholder.svg"}
                             alt="Original document"
                             width={400}
                             height={300}
@@ -185,7 +204,7 @@ export default function Home() {
                         </div>
                       </div>
                     </TabsContent>
-                  </Tabs> */}
+                  </Tabs>
 
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button
@@ -195,13 +214,13 @@ export default function Home() {
                       <Download className="w-4 h-4 mr-2" />
                       Download Redacted Image
                     </Button>
-                    {/* <Button
+                    <Button
                       onClick={resetTool}
                       variant="outline"
                       className="px-8 py-3 rounded-lg border-gray-300 hover:bg-gray-50 bg-transparent"
                     >
                       Process Another Document
-                    </Button> */}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
