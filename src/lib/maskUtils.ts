@@ -1,25 +1,30 @@
-import { PIITag } from "./regexUtils";
+// lib/masking/mapPIITagsToBoundingBoxes.ts
+import { PIITag, RedactedBox } from "@/app/types";
+import { Word } from "tesseract.js";
 
-export async function drawMaskOnImage(imageSrc: string, tags: PIITag[]): Promise<string> {
-  const image = new Image();
-  image.src = imageSrc;
-  await new Promise((res) => (image.onload = res));
+export function mapPIITagsToBoundingBoxes(
+  tags: PIITag[],
+  words: Word[]
+): RedactedBox[] {
+  return tags.flatMap((tag) => {
+    const tagTextLower = tag.text.toLowerCase();
 
-  const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas context missing");
-
-  ctx.drawImage(image, 0, 0);
-
-  // TEMP: draw blurred box (replace with smarter region-based masking using OCR bounding boxes later)
-  ctx.fillStyle = "black";
-  tags.forEach((tag, index) => {
-    const y = 40 + index * 30;
-    ctx.fillRect(40, y, canvas.width - 80, 25);
+    return words
+      .filter((word) => {
+        const wordTextLower = word.text.toLowerCase();
+        return (
+          wordTextLower.includes(tagTextLower) ||
+          tagTextLower.includes(wordTextLower)
+        );
+      })
+      .map((word) => {
+        const { x0, y0, x1, y1 } = word.bbox;
+        return {
+          x: x0,
+          y: y0,
+          width: x1 - x0,
+          height: y1 - y0,
+        };
+      });
   });
-
-  return canvas.toDataURL();
 }

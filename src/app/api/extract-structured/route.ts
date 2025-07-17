@@ -24,3 +24,56 @@
 
 //   res.status(200).json({ data: json });
 // }
+
+// app/api/llm/extract/route.ts
+
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(req: NextRequest) {
+  const { text } = await req.json();
+
+  const prompt = `
+You are a helpful assistant. From the following raw OCR text, extract structured fields if possible.
+
+Respond with a JSON object with fields like:
+- name
+- document_type
+- issue_date
+- expiry_date
+- id_number
+- dob
+- gender
+- address
+
+OCR TEXT:
+"""
+${text}
+"""
+`;
+
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "mistral/mistral-7b-instruct:free",
+      messages: [
+        { role: "system", content: "You are an information extraction assistant." },
+        { role: "user", content: prompt },
+      ],
+    }),
+  });
+
+  const result = await response.json();
+
+  const metadataRaw = result.choices?.[0]?.message?.content || "{}";
+
+  try {
+    const metadata = JSON.parse(metadataRaw);
+    return NextResponse.json({ metadata });
+  } catch (err) {
+    return NextResponse.json({ metadata: {} });
+  }
+}
